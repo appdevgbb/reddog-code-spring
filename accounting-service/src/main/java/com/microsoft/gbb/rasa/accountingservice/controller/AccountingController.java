@@ -1,6 +1,7 @@
 package com.microsoft.gbb.rasa.accountingservice.controller;
 
 import com.microsoft.gbb.rasa.accountingservice.dto.OrderSummaryDto;
+import com.microsoft.gbb.rasa.accountingservice.dto.OrdersTimeSeries;
 import com.microsoft.gbb.rasa.accountingservice.service.AccountingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,5 +21,22 @@ public class AccountingController {
     @CrossOrigin(origins = "*")
     public ResponseEntity<List<OrderSummaryDto>> getAllInFlightOrders() {
         return ResponseEntity.ok(accountingService.findAllInflightOrders());
+    }
+
+    @GetMapping(value = "/orders/{period}/{timeSpan}")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<OrdersTimeSeries> getOrdersByPeriod(@PathVariable String period,
+                                                                    @PathVariable String timeSpan,
+                                                                    @RequestHeader("store-id") String storeId) {
+        return ResponseEntity.ok(accountingService.getOrderCountOverTime(period, timeSpan, storeId));
+    }
+
+    @GetMapping(value = "/orders/{period}/{timeStart}/{timeEnd}")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<OrdersTimeSeries> getOrderCountWithinTimeInterval(@PathVariable String period,
+                                                              @PathVariable String timeStart,
+                                                                @PathVariable String timeEnd,
+                                                              @RequestHeader("store-id") String storeId) {
+        return ResponseEntity.ok(accountingService.getOrderCountWithinTimeInterval(period, timeStart, timeEnd, storeId));
     }
 }

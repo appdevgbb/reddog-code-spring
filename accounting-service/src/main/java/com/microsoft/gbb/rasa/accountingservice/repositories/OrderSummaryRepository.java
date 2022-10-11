@@ -3,6 +3,7 @@ package com.microsoft.gbb.rasa.accountingservice.repositories;
 import com.azure.spring.data.cosmos.repository.CosmosRepository;
 import com.azure.spring.data.cosmos.repository.Query;
 import com.microsoft.gbb.rasa.accountingservice.dto.OrderSummaryDto;
+import com.microsoft.gbb.rasa.accountingservice.dto.OrdersTimeSeries;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -23,4 +24,27 @@ public interface OrderSummaryRepository extends CosmosRepository<OrderSummaryDto
 
     @Query(value = "SELECT * FROM c WHERE c.id = @storeId and c.orderCompletedDate = null")
     List<OrderSummaryDto> findAllInflightOrdersForStore(@Param("storeId") String storeId);
+
+    @Query(value = "SELECT count(1) as total," +
+            "c.createdAt[0] as year,c.createdAt[1] as month, c.createdAt[2] as day," +
+            "c.createdAt[3] as hour, c.createdAt[4] as minute " +
+            "FROM c " +
+            "where c.storeId = \" @storeId\" and c.orderCompletedDate = null" +
+            "and ROUND(((GetCurrentTicks()/10000) - c.orderDateInstant) / 60 / 1000) < @timespan" +
+            "group by c.createdAt")
+    OrdersTimeSeries getOrderCountForThePastTimeSpan(@Param("period") String period,
+                                                     @Param("timeSpan") String timeSpan,
+                                                     @Param("storeId") String storeId);
+
+    @Query(value = "SELECT count(1) as total," +
+            "c.createdAt[0] as year,c.createdAt[1] as month, c.createdAt[2] as day," +
+            "c.createdAt[3] as hour, c.createdAt[4] as minute " +
+            "FROM c " +
+            "where c.storeId = \" @storeId\" and c.orderCompletedDate = null" +
+            "and @timeStart < ROUND(((GetCurrentTicks()/10000) - c.orderDateInstant) / 60 / 1000) < @timeEnd" +
+            "group by c.createdAt")
+    OrdersTimeSeries getOrderCountWithinTimeInterval(@Param("period") String period,
+                                           @Param("timeStart") String timeStart,
+                                           @Param("timeEnd") String timeEnd,
+                                           @Param("storeId") String storeId);
 }

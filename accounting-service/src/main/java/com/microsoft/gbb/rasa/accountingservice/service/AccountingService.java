@@ -1,6 +1,7 @@
 package com.microsoft.gbb.rasa.accountingservice.service;
 
 import com.microsoft.gbb.rasa.accountingservice.dto.OrderSummaryDto;
+import com.microsoft.gbb.rasa.accountingservice.dto.OrdersTimeSeries;
 import com.microsoft.gbb.rasa.accountingservice.repositories.OrderSummaryRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,12 +27,22 @@ public class AccountingService {
         return orderSummaryRepository.findAllInflightOrders();
     }
 
-    // TODO: implement the following methods with JPA queries
-    public void UpdateMetrics(OrderSummaryDto orderSummary) {
-
+    public OrdersTimeSeries getOrderCountOverTime(String period, String timeSpan, String storeId) {
+        log.info("Getting order count for the prior {} {}", timeSpan, period);
+        return orderSummaryRepository.getOrderCountForThePastTimeSpan(period, timeSpan, storeId);
     }
+
+    public OrdersTimeSeries getOrderCountWithinTimeInterval(String period,
+                                                            String timeStart,
+                                                            String timeEnd,
+                                                            String storeId) {
+        log.info("Getting order count between {} and {}", timeStart, timeEnd);
+        return orderSummaryRepository.getOrderCountWithinTimeInterval(period, timeStart, timeEnd, storeId);
+    }
+
+    // TODO: implement the following methods with JPA queries
+    public void UpdateMetrics(OrderSummaryDto orderSummary) {}
     public void markOrderComplete(OrderSummaryDto orderSummary) {}
-    public void getOrderCountOverTime(OrderSummaryDto orderSummary) {}
     public List<String> getUniqueStores() { return null; }
     public void getCorpSalesAndProfitPerStore() { }
     public void getCorpSalesAndProfitTotal() { }
