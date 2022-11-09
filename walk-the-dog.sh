@@ -64,6 +64,7 @@ export COSMOS_ACCOUNT=$(jq -r .cosmosAccountName.value ./outputs/$RG-bicep-outpu
 export COSMOS_PRIMARY_RW_KEY=$(az cosmosdb keys list -n $COSMOS_ACCOUNT  -g $RG -o json | jq -r '.primaryMasterKey')
 export EH_NAME=$(jq -r .eventHubNamespaceName.value ./outputs/$RG-bicep-outputs.json)
 export EH_ENDPOINT=$(jq -r .eventHubEndPoint.value ./outputs/$RG-bicep-outputs.json)
+export EH_ENDPOINT=$EH_NAME'.servicebus.windows.net:9093'
 export EH_CONNECT_STRING=$(az eventhubs namespace authorization-rule keys list --resource-group $RG --namespace-name $EH_NAME --name RootManageSharedAccessKey -o json | jq -r '.primaryConnectionString')
 export EH_CONFIG='org.apache.kafka.common.security.plain.PlainLoginModule required username="$ConnectionString" password="'$EH_CONNECT_STRING'";'
 export SQL_FQDN=$(jq -r .mySqlFQDN.value ./outputs/$RG-bicep-outputs.json)
@@ -82,6 +83,7 @@ printf "export KAFKA_SASL_JAAS_CONFIG='${EH_CONFIG}'\n" >> $VARIABLES_FILE
 printf "export KAFKA_BOOTSTRAP_SERVERS='%s'\n" $EH_ENDPOINT >> $VARIABLES_FILE
 printf "export KAFKA_SECURITY_PROTOCOL='SASL_SSL'\n" >> $VARIABLES_FILE
 printf "export KAFKA_SASL_MECHANISM='PLAIN'\n" >> $VARIABLES_FILE
+printf "export KAFKA_TOPIC_NAME='reddog'\n" >> $VARIABLES_FILE
 
 printf "export MYSQL_URL='jdbc:mysql://%s/reddog'\n" $SQL_FQDN >> $VARIABLES_FILE
 printf "export MYSQL_USER='reddog'\n" >> $VARIABLES_FILE

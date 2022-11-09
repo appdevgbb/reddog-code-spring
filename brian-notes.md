@@ -35,8 +35,14 @@ This deployment will require a bash shell of your choice. It will not work on Az
 
     # Start each service
     mvn clean package
+    java -jar ./target/*.jar
 
-    java -jar ./order-service/target/*.jar
+
+    # Start the UI
+    # clone the repo: https://github.com/appdevgbb/reddog-ui-nextjs
+    # set the .env.local file
+    yarn
+    yarn dev
 
     ```
 
