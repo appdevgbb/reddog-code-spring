@@ -24,7 +24,7 @@ public class MakelineService {
     }
 
     public OrderSummaryDto addOrderToMakeLine(OrderSummaryDto orderSummary) {
-        log.info("Adding order to makeline");
+        log.info("Adding order to make line {}", orderSummary.toString());
         // TODO: Extract dates to separate attributes for range queries (maybe?)
         return orderSummaryRepository.save(orderSummary);
     }
