@@ -47,4 +47,5 @@ makeline-service/.fleet/
 
 outputs/
 config.json
+start.sh
 ./scripts/config.json
