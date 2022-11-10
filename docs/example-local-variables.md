@@ -1,5 +1,7 @@
-# create az backing services, mentioned in README pre-reqs
-# set the following env variables after above step, and replace <> placeholders
+## This is not in use
+
+```bash
+# variables needed to run local. provided scripts will auto-create these
 export KAFKA_BOOTSTRAP_SERVERS=ehreddog2655briar.servicebus.windows.net:9093
 export KAFKA_SECURITY_PROTOCOL=SASL_SSL
 export KAFKA_SASL_MECHANISM=PLAIN
@@ -20,3 +22,4 @@ export AZURE_STORAGE_ENDPOINT=https://reddog2655briar.blob.core.windows.net
 
 # builds and runs the services in parallel - requires gnu-parallel
 # find . -name "pom.xml" | parallel nohup mvn spring-boot:run -f
+```
