@@ -24,11 +24,11 @@ spring:
     show-sql: 'true'
   config:
     import: optional:classpath:.env[.properties]
-  datasource:
-    driverClassName: com.mysql.cj.jdbc.Driver
-    password: ${MYSQLPASSWORD}
-    username: ${MYSQLUSER}
-    url: ${MYSQLURL}
+#  datasource:
+#    driverClassName: com.mysql.cj.jdbc.Driver
+#    password: ${MYSQLPASSWORD}
+#    username: ${MYSQLUSER}
+#    url: ${MYSQLURL}
   flyway:
     baseline-on-migrate: 'true'
   banner:
@@ -39,11 +39,11 @@ spring:
         secret:
           property-sources[0]:
             credential:
-              client-id: ${AZUREKEYVAULTCLIENTID}
-              client-secret: ${AZUREKEYVAULTCLIENTSECRET}
-            endpoint: ${AZUREKEYVAULTENDPOINT}
+              client-id: ${AZUREKEYVAULTCLIENTID:#{null}}
+              client-secret: ${AZUREKEYVAULTCLIENTSECRET:#{null}}
+            endpoint: ${AZUREKEYVAULTENDPOINT:#{null}}
             profile:
-              tenant-id: ${AZUREKEYVAULTTENANTID}
+              tenant-id: ${AZUREKEYVAULTTENANTID:#{null}}
 eureka:
   client:
     register-with-eureka: 'false'
