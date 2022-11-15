@@ -49,3 +49,8 @@ outputs/
 config.json
 start.sh
 ./scripts/config.json
+ancillary/local-gateway/.mvn/wrapper/
+
+ancillary/local-gateway/mvnw
+
+*.cmd
