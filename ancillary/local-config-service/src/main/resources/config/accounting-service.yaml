@@ -1,6 +1,4 @@
 spring:
-  application:
-    name: accounting-service
   kafka:
     producer:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -28,9 +26,8 @@ cosmos:
   uri: ${AZURECOSMOSDBURI}
 eureka:
   client:
-    register-with-eureka: true
-    fetch-registry: true
-    enabled: true
+    fetch-registry: 'false'
+    register-with-eureka: 'false'
 server:
   port: '8087'
 topic:

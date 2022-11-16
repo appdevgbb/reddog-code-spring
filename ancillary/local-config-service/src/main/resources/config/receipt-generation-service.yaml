@@ -31,11 +31,6 @@ spring:
           account-name: ${AZURESTORAGEACCOUNTNAME}
           account-key: ${AZURESTORAGEACCOUNTKEY}
           endpoint: ${AZURESTORAGEENDPOINT}
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    enabled: true
 data:
   BLOB:
     CONTAINER: ${BLOB_CONTAINER:reddogasa}

@@ -1,6 +1,4 @@
 spring:
-  application:
-      name: order-service
   kafka:
     topic:
       name: ${KAFKATOPICNAME:reddogoct3}
@@ -37,9 +35,8 @@ spring:
     location: static/banner.txt
 eureka:
   client:
-    register-with-eureka: true
-    fetch-registry: true
-    enabled: true
+    register-with-eureka: 'false'
+    fetch-registry: 'false'
 springdoc:
   swagger-ui:
     enabled: 'true'
