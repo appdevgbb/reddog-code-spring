@@ -54,3 +54,5 @@ ancillary/local-gateway/.mvn/wrapper/
 ancillary/local-gateway/mvnw
 
 *.cmd
+
+nn-bindings/reddog-sandbox
