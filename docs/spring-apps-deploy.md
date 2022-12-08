@@ -45,4 +45,6 @@ az spring app deploy \
     --registry-password <password>
 
 
+docker build --file order-service/Dockerfile --iidfile /tmp/docker-build-push-3ZFyEL/iidfile --label org.opencontainers.image.source=git://github.com/appdevgbb/reddog-code-spring.git --label org.opencontainers.image.created=2022-12-05T15:53:13Z --label org.opencontainers.image.revision=f10d239 --tag ghcr.io/azure/reddog-retail-demo/reddog-order-service:latest --tag ghcr.io/azure/reddog-retail-demo/reddog-order-service:f10d239 --metadata-file /tmp/docker-build-push-3ZFyEL/metadata-file --push order-service
+
 ```
