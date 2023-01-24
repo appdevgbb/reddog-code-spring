@@ -1,11 +1,11 @@
-name: package-order-service
+name: package-receipt-generation-service
 
 on:
   push:
     branches:
       - 'main'
     paths:
-      - 'order-service/**'
+      - 'receipt-generation-service/**'
 
   workflow_dispatch:
 
@@ -24,8 +24,8 @@ jobs:
         run: |
           echo ::set-output name=version::$(echo ${GITHUB_SHA} | cut -c1-7)
           echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-          echo ::set-output name=project::order-service
-          echo ::set-output name=image::reddog-java-order-service
+          echo ::set-output name=project::receipt-generation-service
+          echo ::set-output name=image::reddog-java-receipt-generation-service
           echo ::set-output name=repository::ghcr.io/azure/reddog-demo
 
   package-service:
@@ -46,8 +46,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
-          context: order-service
-          file: order-service/Dockerfile
+          context: receipt-generation-service
+          file: receipt-generation-service/Dockerfile
           push: true
           tags: |
             ${{ needs.set-env.outputs.repository }}/${{ needs.set-env.outputs.image }}:latest
