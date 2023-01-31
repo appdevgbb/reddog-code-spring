@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: accounting-service
+  namespace: reddog
+  labels:
+    app: accounting-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: accounting-service
+  template:
+    metadata:
+      labels:
+        app: accounting-service
+    spec:
+      containers:
+        - name: accounting-service
+          image: ghcr.io/azure/reddog-demo/reddog-java-accounting-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8087
+          imagePullPolicy: Always            
+          envFrom:
+          - configMapRef:
+              name: reddog-env-vars
+---              
+apiVersion: v1
+kind: Service
+metadata:
+  name: accounting-service
+  namespace: reddog
+  labels:
+    name: accounting-service
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8087
+    targetPort: 8087
+  selector:
+    app: accounting-service

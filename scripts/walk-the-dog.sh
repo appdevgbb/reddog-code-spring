@@ -34,7 +34,7 @@ echo 'Starting Bicep deployment of resources'
 echo '****************************************************'
 
 az deployment group create \
-    --name spring-reddog \
+    --name reddog-backing-services \
     --mode Incremental \
     --only-show-errors \
     --resource-group $RG \
@@ -48,7 +48,7 @@ echo 'Azure bicep deployment complete'
 # Save deployment outputs
 echo ''
 echo "Collecting deployment outputs"
-az deployment group show -g $RG -n spring-reddog -o json --query properties.outputs > ".././outputs/$RG-bicep-outputs.json"
+az deployment group show -g $RG -n reddog-backing-services -o json --query properties.outputs > ".././outputs/$RG-bicep-outputs.json"
 
 export COSMOS_URI=$(jq -r .cosmosUri.value .././outputs/$RG-bicep-outputs.json)
 export COSMOS_ACCOUNT=$(jq -r .cosmosAccountName.value .././outputs/$RG-bicep-outputs.json)
@@ -63,9 +63,11 @@ export REDIS_HOST=$(jq -r .redisHost.value .././outputs/$RG-bicep-outputs.json)
 export REDIS_PWD=$(jq -r .redisPassword.value .././outputs/$RG-bicep-outputs.json)
 export STORAGE_ACCOUNT=$(jq -r .storageAccountName.value .././outputs/$RG-bicep-outputs.json)
 export STORAGE_ACCOUNT_KEY=$(jq -r .storageAccountKey.value .././outputs/$RG-bicep-outputs.json)
+export SB_CONNECT_STRING=$(jq -r .sbConnectionString.value .././outputs/$RG-bicep-outputs.json)
 
-# Write variables to file
+# Write variables to files
 VARIABLES_FILE=".././outputs/var-$RG.sh"
+CONFIGMAP_FILE=".././outputs/config-map-$RG.yaml"
 
 printf "export AZURECOSMOSDBURI='%s'\n" $COSMOS_URI >> $VARIABLES_FILE
 printf "export AZURECOSMOSDBKEY='%s'\n" $COSMOS_PRIMARY_RW_KEY >> $VARIABLES_FILE
@@ -75,6 +77,8 @@ printf "export KAFKABOOTSTRAPSERVERS='%s'\n" $EH_ENDPOINT >> $VARIABLES_FILE
 printf "export KAFKASECURITYPROTOCOL='SASL_SSL'\n" >> $VARIABLES_FILE
 printf "export KAFKASASLMECHANISM='PLAIN'\n" >> $VARIABLES_FILE
 printf "export KAFKATOPICNAME='reddog'\n" >> $VARIABLES_FILE
+printf "export KAFKATOPICGROUP='order-service'\n" >> $VARIABLES_FILE
+printf "export KAFKATOPICNAME='reddognov'\n" >> $VARIABLES_FILE
 printf "export MYSQLURL='jdbc:mysql://%s/reddog'\n" $SQL_FQDN >> $VARIABLES_FILE
 printf "export MYSQLUSER='reddog'\n" >> $VARIABLES_FILE
 printf "export MYSQLPASSWORD='%s'\n" $ADMIN_PASSWORD >> $VARIABLES_FILE
@@ -84,9 +88,39 @@ printf "export AZUREREDISACCESSKEY='%s'\n" $REDIS_PWD >> $VARIABLES_FILE
 printf "export AZURESTORAGEACCOUNTNAME='%s'\n" $STORAGE_ACCOUNT >> $VARIABLES_FILE
 printf "export AZURESTORAGEACCOUNTKEY='%s'\n" $STORAGE_ACCOUNT_KEY >> $VARIABLES_FILE
 printf "export AZURESTORAGEENDPOINT='https://%s.blob.core.windows.net'\n" $STORAGE_ACCOUNT >> $VARIABLES_FILE
+printf "export SERVICEBUSCONNECTIONSTRING='%s'\n" $SB_CONNECT_STRING >> $VARIABLES_FILE
+
+printf "apiVersion: v1\n" >> $CONFIGMAP_FILE
+printf "kind: ConfigMap\n" >> $CONFIGMAP_FILE
+printf "metadata:\n" >> $CONFIGMAP_FILE
+printf "  name: reddog-env-vars\n" >> $CONFIGMAP_FILE
+printf "  namespace: reddog\n" >> $CONFIGMAP_FILE
+printf "data:\n" >> $CONFIGMAP_FILE
+printf "  AZURECOSMOSDBURI: '%s'\n" $COSMOS_URI >> $CONFIGMAP_FILE
+printf "  AZURECOSMOSDBKEY: '%s'\n" $COSMOS_PRIMARY_RW_KEY >> $CONFIGMAP_FILE
+printf "  AZURECOSMOSDBDATABASENAME: 'reddog'\n" >> $CONFIGMAP_FILE
+printf "  KAFKASASLJAASCONFIG: '${EH_CONFIG}'\n" >> $CONFIGMAP_FILE
+printf "  KAFKABOOTSTRAPSERVERS: '%s'\n" $EH_ENDPOINT >> $CONFIGMAP_FILE
+printf "  KAFKASECURITYPROTOCOL: 'SASL_SSL'\n" >> $CONFIGMAP_FILE
+printf "  KAFKASASLMECHANISM: 'PLAIN'\n" >> $CONFIGMAP_FILE
+printf "  KAFKATOPICNAME: 'reddog'\n" >> $CONFIGMAP_FILE
+printf "  KAFKATOPICGROUP: 'order-service'\n" >> $CONFIGMAP_FILE
+printf "  KAFKATOPICNAME: 'reddognov'\n" >> $CONFIGMAP_FILE
+printf "  MYSQLURL: 'jdbc:mysql://%s/reddog'\n" $SQL_FQDN >> $CONFIGMAP_FILE
+printf "  MYSQLUSER: 'reddog'\n" >> $CONFIGMAP_FILE
+printf "  MYSQLPASSWORD: '%s'\n" $ADMIN_PASSWORD >> $CONFIGMAP_FILE
+printf "  AZUREREDISHOST: '%s'\n" $REDIS_HOST >> $CONFIGMAP_FILE
+printf "  AZUREREDISPORT: '6380'\n" >> $CONFIGMAP_FILE
+printf "  AZUREREDISACCESSKEY: '%s'\n" $REDIS_PWD >> $CONFIGMAP_FILE
+printf "  AZURESTORAGEACCOUNTNAME: '%s'\n" $STORAGE_ACCOUNT >> $CONFIGMAP_FILE
+printf "  AZURESTORAGEACCOUNTKEY: '%s'\n" $STORAGE_ACCOUNT_KEY >> $CONFIGMAP_FILE
+printf "  AZURESTORAGEENDPOINT: 'https://%s.blob.core.windows.net'\n" $STORAGE_ACCOUNT >> $CONFIGMAP_FILE
+printf "  SERVICEBUSCONNECTIONSTRING: '%s'\n" $SB_CONNECT_STRING >> $CONFIGMAP_FILE
+printf "  ORDER_SVC_URL: 'http://order-service.reddog.svc.cluster.local:8082'\n" >> $CONFIGMAP_FILE
 
 echo ''
 echo 'Local variables file created: ' $VARIABLES_FILE
+echo 'ConfigMap YAML created: ' $CONFIGMAP_FILE
 echo ''
 
 echo '****************************************************'
@@ -105,11 +139,12 @@ then
 elif [ "$DEPLOY_TARGET" = "asa" ]
 then
     echo ''
+    echo '****************************************************'
     echo 'Deploying Azure Spring Apps'
+    echo '****************************************************'
 
     deploy_azure_spring_apps
-    #write_variables_to_keyvault
-    #deploy_reddog_asa
+
     echo ''
     echo '****************************************************'
     echo 'Script complete'
@@ -118,9 +153,12 @@ then
 elif [ "$DEPLOY_TARGET" = "aks" ]
 then
     echo ''
+    echo '****************************************************'
     echo 'Deploying AKS'
+    echo '****************************************************'
 
-    #deploy_azure_kubernetes_service
+    deploy_azure_kubernetes_service
+
     echo ''
     echo '****************************************************'
     echo 'Script complete'

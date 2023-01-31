@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loyalty-service
+  namespace: reddog
+  labels:
+    app: loyalty-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loyalty-service
+  template:
+    metadata:
+      labels:
+        app: loyalty-service
+    spec:
+      containers:
+        - name: loyalty-service
+          image: ghcr.io/azure/reddog-demo/reddog-java-loyalty-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8083
+          imagePullPolicy: Always            
+          envFrom:
+          - configMapRef:
+              name: reddog-env-vars
+---              
+apiVersion: v1
+kind: Service
+metadata:
+  name: loyalty-service
+  namespace: reddog
+  labels:
+    name: loyalty-service
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8083
+    targetPort: 8083
+  selector:
+    app: loyalty-service

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: virtual-customers
+  namespace: reddog
+  labels:
+    app: virtual-customers
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: virtual-customers
+  template:
+    metadata:
+      labels:
+        app: virtual-customers
+    spec:
+      containers:
+        - name: virtual-customers
+          image: ghcr.io/azure/reddog-demo/reddog-java-virtual-customers:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8091
+          imagePullPolicy: Always            
+          envFrom:
+          - configMapRef:
+              name: reddog-env-vars
+---              
+apiVersion: v1
+kind: Service
+metadata:
+  name: virtual-customers
+  namespace: reddog
+  labels:
+    name: virtual-customers
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8091
+    targetPort: 8091
+  selector:
+    app: virtual-customers

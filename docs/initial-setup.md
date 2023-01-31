@@ -10,7 +10,7 @@ Instructions for both are below.
 
 In this step, you will provision the Azure resources needed to support Red Dog Java. This includes: Event-Hubs, Azure MySQL, Azure Redis, CosmosDB, Azure OpenAI Service, Azure Service Bus, Azure Key Vault, Storage Account, etc.
 
-This script will also deploy ASA, AKS, etc. if needed.
+This script will also deploy ASA, AKS, ARO if needed.
 
 * Update/create the `config.json` file (in the `./scripts` directory)
     * The `deploytarget` setting determines if you will run local or use one of the Azure options
@@ -21,7 +21,7 @@ This script will also deploy ASA, AKS, etc. if needed.
             "location":"eastus",
             "username": "shortname",
             "adminpassword": "replaceSecurePassword",
-            "_comment1": "for deploy target one of: local, asa, aks",
+            "_comment1": "for deploy target one of: local, asa, aks, aro",
             "deploytarget": "local"
         }
         ```
@@ -64,9 +64,10 @@ This deployment will require a bash shell of your choice. It will not work on Az
         ```
 
     * Repeat for each of the other services:
+        * accounting-service
         * makeline-service
         * loyalty-service
-        * accounting-service
+        * receipt-generation-service
         * virtual-worker
         * virtual-customer
 
@@ -79,6 +80,16 @@ This deployment will require a bash shell of your choice. It will not work on Az
         yarn
         yarn dev
         ```
+
+### Azure Kubernetes Service (AKS) Deployment
+
+If you selected AKS as the deployment target, your terminal should have access to cluster and the apps were deployed via GitOps. 
+
+Review the pods deployed in the cluster and validate the application UI is functional. 
+
+> Note: The manual steps for deploying the application in AKS are noted here: [AKS Deployment Notes](/docs/aks-deploy.md)
+
+
 
 ### Azure Spring Apps Deployment
 
@@ -192,11 +203,3 @@ Follow the steps below to deploy Red Dog to your Azure Spring Apps instance depl
     --container-image chzbrgr71/reddog-openai-svc:v1
 
     ```
-
-### Azure Kubernetes Service (AKS) Deployment
-
-Coming soon...
-
-
-
-
