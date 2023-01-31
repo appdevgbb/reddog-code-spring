@@ -1,11 +1,12 @@
-package com.microsoft.gbb.reddog.orderservice.entities;
+package com.microsoft.gbb.reddog.orderservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -24,7 +25,7 @@ public class OrderSummary {
 
     @Temporal(TemporalType.DATE)
     @Column(name = "order_completed_date")
-    private Date orderCompletedDate;
+    private LocalDate orderCompletedDate;
 
     @Column(name = "loyalty_id")
     private String loyaltyId;
@@ -40,7 +41,7 @@ public class OrderSummary {
 
     @Temporal(TemporalType.DATE)
     @Column(name = "order_date")
-    private Date orderDate;
+    private LocalDateTime orderDate;
 
     @Column(name = "order_total", nullable = false)
     private double orderTotal;
