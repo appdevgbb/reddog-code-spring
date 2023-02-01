@@ -62,3 +62,5 @@ order-service/illuminate-diagnostics-*.jar
 
 temp-log.txt
 /generative-ai/az-openai/openai/venv/
+
+brian-notes.md
