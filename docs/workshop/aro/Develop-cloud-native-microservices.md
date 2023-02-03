@@ -11,18 +11,25 @@ Develop production-grade microservices in Spring or Quarkus, targeting ARO and d
 | **Duration**            | 2 days                                                       |
 | **Author**              | amcngbb@microsoft.com                                        |
 
-## Video walk-through
-
-- TBD
-
 ## Prerequisites
 
-### Visual Studio Code
+<details>
+  <summary>VS Code</summary>
 
-TBD:
-
+### TBD:
 - Download link
 - Extensions
+</details>
+
+<details>
+  <summary>Azure and ARO pre-reqs</summary>
+
+### TBD:
+- CLI
+- ARO quota requests
+- Pull Secret
+</details>
+
 
 ## The workshop
 
