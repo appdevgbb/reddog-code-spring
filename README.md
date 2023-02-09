@@ -1,5 +1,6 @@
+# reddog-code-spring (moved)
 
-# reddog-code-spring
+# :warning: MOVED to [reddog-solutions](https://github.com/Azure/reddog-solutions)
 
 ### Background
 
